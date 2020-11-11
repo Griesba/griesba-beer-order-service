@@ -1,8 +1,6 @@
 package com.griesba.brewery.beer.order.service.domain;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +9,8 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Entity
 public class Customer extends BaseEntity {
@@ -22,13 +21,13 @@ public class Customer extends BaseEntity {
     private UUID apiKey;
 
     @OneToMany( mappedBy = "customer")
-    private List<BeerOder> beerOrders;
+    private List<BeerOrder> beerOrders;
 
 
     @Builder
     public Customer(UUID id, Long version, Timestamp createdDate,
                     Timestamp lastModifiedDate, String customerName,
-                    UUID apiKey, List<BeerOder> beerOrders) {
+                    UUID apiKey, List<BeerOrder> beerOrders) {
         super(id, version, createdDate, lastModifiedDate);
         this.customerName = customerName;
         this.apiKey = apiKey;

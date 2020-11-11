@@ -10,14 +10,14 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Component
-public class BeerOderBootStrap implements CommandLineRunner {
+public class BeerOrderBootStrap implements CommandLineRunner {
 
-    private static final String TASTING_ROOM = "Tasting room";
-    private static final String BEER_UPC1 = "8-0823490818-12";
-    private static final String BEER_UPC2 = "8-0823490818-13";
-    private static final String BEER_UPC3 = "8-0823490818-14";
+    public static final String TASTING_ROOM = "Tasting room";
+    public static final String BEER_UPC1 = "8-0823490818-12";
+    public static final String BEER_UPC2 = "8-0823490818-13";
+    public static final String BEER_UPC3 = "8-0823490818-14";
 
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
     @Override
     public void run(String... args) throws Exception {

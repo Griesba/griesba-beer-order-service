@@ -16,11 +16,11 @@ import java.util.UUID;
 @MappedSuperclass
 public class BaseEntity {
 
-    public BaseEntity(UUID id, Long version, Timestamp createdDate, Timestamp lastModifiedDate) {
+    public BaseEntity(UUID id, Long version, Timestamp creationDate, Timestamp lastModificationDate) {
         this.id = id;
         this.version = version;
-        this.createdDate = createdDate;
-        this.lastModifiedDate = lastModifiedDate;
+        this.creationDate = creationDate;
+        this.lastModificationDate = lastModificationDate;
     }
 
     @Id
@@ -38,10 +38,10 @@ public class BaseEntity {
 
     @CreationTimestamp
     @Column(updatable = false)
-    private Timestamp createdDate;
+    private Timestamp creationDate;
 
     @UpdateTimestamp
-    private Timestamp lastModifiedDate;
+    private Timestamp lastModificationDate;
 
     public boolean isNew() {
         return this.id == null;
