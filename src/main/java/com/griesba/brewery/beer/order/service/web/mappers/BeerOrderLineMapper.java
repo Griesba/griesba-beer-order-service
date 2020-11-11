@@ -4,7 +4,7 @@ import com.griesba.brewery.beer.order.service.domain.BeerOrderLine;
 import com.griesba.brewery.beer.order.service.web.model.BeerOrderLineDto;
 import org.mapstruct.Mapper;
 
-@Mapper(uses = {DateMapper.class})
+//@Mapper(uses = {DateMapper.class})
 public interface BeerOrderLineMapper {
 
     BeerOrderLineDto beerOrderLineToBeerOrderLineDto(BeerOrderLine beerOrderLine);

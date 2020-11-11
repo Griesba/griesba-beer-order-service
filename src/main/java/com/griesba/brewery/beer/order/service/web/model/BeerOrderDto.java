@@ -1,7 +1,10 @@
 package com.griesba.brewery.beer.order.service.web.model;
 
 import com.griesba.brewery.beer.order.service.domain.OrderStatusEnum;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
 import java.util.List;

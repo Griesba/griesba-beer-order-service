@@ -9,7 +9,9 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -18,9 +20,10 @@ import java.util.UUID;
 @Entity
 public class BeerOrder extends BaseEntity {
 
+
     @Builder
     public BeerOrder(UUID id, Long version, Timestamp creationDate, Timestamp lastModificationDate,
-                     String customerRef, Customer customer, List<BeerOrderLine> beerOrderLines,
+                     String customerRef, Customer customer, Set<BeerOrderLine> beerOrderLines,
                      OrderStatusEnum orderStatusEnum, String orderStatusCallbackUrl) {
         super(id, version, creationDate, lastModificationDate);
         this.customerRef = customerRef;
@@ -37,8 +40,11 @@ public class BeerOrder extends BaseEntity {
 
     @OneToMany(mappedBy = "beerOrder", cascade = CascadeType.ALL)
     @Fetch(FetchMode.JOIN)
-    private List<BeerOrderLine> beerOrderLines;
+    private Set<BeerOrderLine> beerOrderLines;
 
     private OrderStatusEnum orderStatusEnum = OrderStatusEnum.NEW;
     private String orderStatusCallbackUrl;
+
+
+
 }
