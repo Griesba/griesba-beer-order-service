@@ -18,15 +18,18 @@ public class BeerOrderLine extends BaseEntity {
 
     private UUID beerId;
 
+    private String upc;
+
     private int quantityOnHand = 0;
 
     private int allocatedQuantity = 0;
 
     @Builder
-    public BeerOrderLine(UUID id, Long version, Timestamp creationDate, Timestamp lastModificationDate, BeerOrder beerOrder, UUID beerId, int quantityOnHand, int allocatedQuantity) {
+    public BeerOrderLine(UUID id, Long version, Timestamp creationDate, Timestamp lastModificationDate, BeerOrder beerOrder, UUID beerId, String upc, int quantityOnHand, int allocatedQuantity) {
         super(id, version, creationDate, lastModificationDate);
         this.beerOrder = beerOrder;
         this.beerId = beerId;
+        this.upc = upc;
         this.quantityOnHand = quantityOnHand;
         this.allocatedQuantity = allocatedQuantity;
     }

@@ -20,12 +20,13 @@ public class BeerOrderLineMapperImpl implements BeerOrderLineMapper {
         }
 
         return BeerOrderLineDto.builder()
-            .id(line.getId())
-            .creationDate(this.dateMapper.asOffsetDateTime(line.getCreationDate()))
-            .lastModificationDate(this.dateMapper.asOffsetDateTime(line.getLastModificationDate()))
-            .beerId(line.getBeerId())
-            .orderQuantity(line.getQuantityOnHand())
-             .build();
+                .id(line.getId())
+                .creationDate(this.dateMapper.asOffsetDateTime(line.getCreationDate()))
+                .lastModificationDate(this.dateMapper.asOffsetDateTime(line.getLastModificationDate()))
+                .beerId(line.getBeerId())
+                .upc(line.getUpc())
+                .orderQuantity(line.getQuantityOnHand())
+                .build();
     }
 
     @Override
@@ -35,12 +36,13 @@ public class BeerOrderLineMapperImpl implements BeerOrderLineMapper {
         }
 
         return BeerOrderLine.builder()
-            .id(dto.getId())
-            .creationDate(this.dateMapper.asTimestamp(dto.getCreationDate()))
-            .lastModificationDate(this.dateMapper.asTimestamp(dto.getLastModificationDate()))
-            .beerId(dto.getBeerId())
-            .quantityOnHand(dto.getOrderQuantity())
-            .build();
+                .id(dto.getId())
+                .creationDate(this.dateMapper.asTimestamp(dto.getCreationDate()))
+                .lastModificationDate(this.dateMapper.asTimestamp(dto.getLastModificationDate()))
+                .beerId(dto.getBeerId())
+                .upc(dto.getUpc())
+                .quantityOnHand(dto.getOrderQuantity())
+                .build();
 
     }
 }
