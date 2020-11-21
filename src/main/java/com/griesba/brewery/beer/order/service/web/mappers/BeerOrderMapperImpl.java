@@ -1,8 +1,11 @@
 package com.griesba.brewery.beer.order.service.web.mappers;
 
 import com.griesba.brewery.beer.order.service.domain.BeerOrder;
+import com.griesba.brewery.beer.order.service.services.beerService.BeerServiceClient;
 import com.griesba.brewery.beer.order.service.web.model.BeerOrderDto;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.stream.Collectors;
 
@@ -11,10 +14,12 @@ public class BeerOrderMapperImpl implements BeerOrderMapper {
 
     private BeerOrderLineMapper beerOrderLineMapper;
     private DateMapper dateMapper;
+    private BeerServiceClient beerServiceClient;
 
-    public BeerOrderMapperImpl(BeerOrderLineMapper beerOrderLineMapper, DateMapper dateMapper) {
+    public BeerOrderMapperImpl(BeerOrderLineMapper beerOrderLineMapper, DateMapper dateMapper, BeerServiceClient beerServiceClient) {
         this.beerOrderLineMapper = beerOrderLineMapper;
         this.dateMapper = dateMapper;
+        this.beerServiceClient = beerServiceClient;
     }
 
     @Override
