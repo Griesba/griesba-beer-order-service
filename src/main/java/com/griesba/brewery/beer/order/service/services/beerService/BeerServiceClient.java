@@ -56,7 +56,7 @@ public class BeerServiceClient {
                    url,
                    HttpMethod.GET,
                    null,
-                   new ParameterizedTypeReference<>(){},
+                   new ParameterizedTypeReference<BeerDto>(){},
                    upc);
            return responseEntity.getBody();
        }catch (Exception e) {
