@@ -1,6 +1,6 @@
 package com.griesba.brewery.beer.order.service.services.beerService;
 
-import com.griesba.brewery.beer.order.service.web.model.BeerDto;
+import com.griesba.brewery.model.BeerDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;

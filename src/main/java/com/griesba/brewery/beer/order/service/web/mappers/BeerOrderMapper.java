@@ -1,8 +1,7 @@
 package com.griesba.brewery.beer.order.service.web.mappers;
 
 import com.griesba.brewery.beer.order.service.domain.BeerOrder;
-import com.griesba.brewery.beer.order.service.web.model.BeerOrderDto;
-import org.mapstruct.Mapper;
+import com.griesba.brewery.model.BeerOrderDto;
 
 //@Mapper(uses = {DateMapper.class, BeerOrderLineMapper.class})
 public interface BeerOrderMapper {

@@ -2,10 +2,8 @@ package com.griesba.brewery.beer.order.service.web.mappers;
 
 import com.griesba.brewery.beer.order.service.domain.BeerOrder;
 import com.griesba.brewery.beer.order.service.services.beerService.BeerServiceClient;
-import com.griesba.brewery.beer.order.service.web.model.BeerOrderDto;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import com.griesba.brewery.model.BeerOrderDto;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.stream.Collectors;
 
@@ -27,13 +25,13 @@ public class BeerOrderMapperImpl implements BeerOrderMapper {
         if (beerOrder == null) {
             return null;
         }
-        return BeerOrderDto.builder()
-                .customerRef(beerOrder.getCustomerRef())
-                .customerId(beerOrder.getCustomer().getId())
-                .id(beerOrder.getId())
-                .creationDate(dateMapper.asOffsetDateTime(beerOrder.getCreationDate()))
-                .lastModificationDate(dateMapper.asOffsetDateTime(beerOrder.getLastModificationDate()))
-                .beerOrderLines(beerOrder.getBeerOrderLines().stream().map(beerOrderLineMapper::beerOrderLineToBeerOrderLineDto).collect(Collectors.toList()))
+        return new BeerOrderDto.BeerOrderDtoBuilder()
+                .withCustomerRef(beerOrder.getCustomerRef())
+                .withCustomerId(beerOrder.getCustomer().getId())
+                .withId(beerOrder.getId())
+                .withCreationDate(dateMapper.asOffsetDateTime(beerOrder.getCreationDate()))
+                .withLastModificationDate(dateMapper.asOffsetDateTime(beerOrder.getLastModificationDate()))
+                .withBeerOrderLines(beerOrder.getBeerOrderLines().stream().map(beerOrderLineMapper::beerOrderLineToBeerOrderLineDto).collect(Collectors.toList()))
                 .build();
     }
 

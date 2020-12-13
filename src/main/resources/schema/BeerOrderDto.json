@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "javaInterfaces" : ["java.io.Serializable"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "customerId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "customerRef": {
+      "type": "string"
+    },
+    "beerOrderLines": {
+      "type": "array",
+      "items": {
+        "$ref": "BeerOrderLineDto.json"
+      }
+    },
+    "orderStatus": {
+      "existingJavaType": "com.griesba.brewery.beer.order.service.domain.OrderStatusEnum",
+      "type": "object"
+    },
+    "version": {
+      "type": "integer",
+      "format": "utc-millisec"
+    },
+    "orderStatusCallbackUrl": {
+      "type": "string"
+    },
+    "creationDate": {
+      "existingJavaType": "java.time.OffsetDateTime",
+      "type": "object",
+      "format" : "date-time",
+      "customDateTimePattern" : "yyyy-MM-dd'T'HH:mm:ssZ"
+    },
+    "lastModificationDate": {
+      "existingJavaType": "java.time.OffsetDateTime",
+      "type": "object",
+      "format" : "date-time",
+      "customDateTimePattern" : "yyyy-MM-dd'T'HH:mm:ssZ"
+    }
+  }
+}

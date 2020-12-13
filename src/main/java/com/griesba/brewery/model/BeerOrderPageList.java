@@ -1,6 +1,5 @@
-package com.griesba.brewery.beer.order.service.web.model;
+package com.griesba.brewery.model;
 
-import com.griesba.brewery.beer.order.service.domain.BeerOrder;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 

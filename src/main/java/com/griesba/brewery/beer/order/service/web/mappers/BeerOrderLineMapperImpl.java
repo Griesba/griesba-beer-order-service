@@ -2,9 +2,8 @@ package com.griesba.brewery.beer.order.service.web.mappers;
 
 import com.griesba.brewery.beer.order.service.domain.BeerOrderLine;
 import com.griesba.brewery.beer.order.service.services.beerService.BeerServiceClient;
-import com.griesba.brewery.beer.order.service.web.model.BeerDto;
-import com.griesba.brewery.beer.order.service.web.model.BeerOrderLineDto;
-import com.griesba.brewery.beer.order.service.web.model.BeerOrderLineDtoBuilder;
+import com.griesba.brewery.model.BeerDto;
+import com.griesba.brewery.model.BeerOrderLineDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,19 +25,19 @@ public class BeerOrderLineMapperImpl implements BeerOrderLineMapper {
 
         BeerDto beerDto = beerServiceClient.getBeerByUpc(line.getUpc());
 
-        BeerOrderLineDto.BeerOrderLineDtoBuilder beerOrderLineDtoBuilder = BeerOrderLineDto.builder()
-                .id(line.getId())
-                .creationDate(this.dateMapper.asOffsetDateTime(line.getCreationDate()))
-                .lastModificationDate(this.dateMapper.asOffsetDateTime(line.getLastModificationDate()))
-                .upc(line.getUpc())
-                .orderQuantity(line.getQuantityOnHand());
+        BeerOrderLineDto.BeerOrderLineDtoBuilder beerOrderLineDtoBuilder = new BeerOrderLineDto.BeerOrderLineDtoBuilder<>()
+                .withId(line.getId())
+                .withCreationDate(this.dateMapper.asOffsetDateTime(line.getCreationDate()))
+                .withLastModificationDate(this.dateMapper.asOffsetDateTime(line.getLastModificationDate()))
+                .withUpc(line.getUpc())
+                .withOrderQuantity(line.getQuantityOnHand());
 
         if (beerDto != null) {
             beerOrderLineDtoBuilder
-                    .style(beerDto.getStyle())
-                    .beerId(beerDto.getId())
-                    .version(beerDto.getVersion())
-                    .beerName(beerDto.getName());
+                    .withStyle(beerDto.getStyle())
+                    .withBeerId(beerDto.getId())
+                    .withVersion(beerDto.getVersion())
+                    .withBeerName(beerDto.getName());
         }
 
         return beerOrderLineDtoBuilder.build();

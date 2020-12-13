@@ -1,13 +1,11 @@
 package com.griesba.brewery.beer.order.service.services;
 
 import com.griesba.brewery.beer.order.service.bootstrap.BeerOrderBootStrap;
-import com.griesba.brewery.beer.order.service.domain.BeerOrder;
-import com.griesba.brewery.beer.order.service.domain.BeerOrderLine;
 import com.griesba.brewery.beer.order.service.domain.Customer;
 import com.griesba.brewery.beer.order.service.repository.BeerOrderRepository;
 import com.griesba.brewery.beer.order.service.repository.CustomerRepository;
-import com.griesba.brewery.beer.order.service.web.model.BeerOrderDto;
-import com.griesba.brewery.beer.order.service.web.model.BeerOrderLineDto;
+import com.griesba.brewery.model.BeerOrderDto;
+import com.griesba.brewery.model.BeerOrderLineDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -51,18 +49,18 @@ public class TastingRoomService {
     private void placeOrder(Customer customer) {
         String upc = getRandomUPC();
 
-        BeerOrderLineDto beerOrderLineDto = BeerOrderLineDto.builder()
-                .upc(upc)
-                .orderQuantity(new Random().nextInt(6))
+        BeerOrderLineDto beerOrderLineDto = new BeerOrderLineDto.BeerOrderLineDtoBuilder()
+                .withUpc(upc)
+                .withOrderQuantity(new Random().nextInt(6))
                 .build();
 
         List<BeerOrderLineDto> beerOrderLines = new ArrayList<>();
         beerOrderLines.add(beerOrderLineDto);
 
-        BeerOrderDto beerOrder = BeerOrderDto.builder()
-                .customerId(customer.getId())
-                .customerRef(UUID.randomUUID().toString())
-                .beerOrderLines(beerOrderLines)
+        BeerOrderDto beerOrder = new BeerOrderDto.BeerOrderDtoBuilder()
+                .withCustomerId(customer.getId())
+                .withCustomerRef(UUID.randomUUID().toString())
+                .withBeerOrderLines(beerOrderLines)
                 .build();
 
         beerOrderService.placeOrder(customer.getId(), beerOrder);

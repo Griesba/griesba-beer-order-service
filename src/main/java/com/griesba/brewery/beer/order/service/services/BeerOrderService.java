@@ -1,7 +1,7 @@
 package com.griesba.brewery.beer.order.service.services;
 
-import com.griesba.brewery.beer.order.service.web.model.BeerOrderDto;
-import com.griesba.brewery.beer.order.service.web.model.BeerOrderPageList;
+import com.griesba.brewery.model.BeerOrderDto;
+import com.griesba.brewery.model.BeerOrderPageList;
 import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;

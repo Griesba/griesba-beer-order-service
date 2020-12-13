@@ -1,8 +1,8 @@
 package com.griesba.brewery.beer.order.service.web.controller;
 
 import com.griesba.brewery.beer.order.service.services.BeerOrderService;
-import com.griesba.brewery.beer.order.service.web.model.BeerOrderDto;
-import com.griesba.brewery.beer.order.service.web.model.BeerOrderPageList;
+import com.griesba.brewery.model.BeerOrderDto;
+import com.griesba.brewery.model.BeerOrderPageList;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

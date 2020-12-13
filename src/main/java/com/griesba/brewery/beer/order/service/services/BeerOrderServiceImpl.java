@@ -6,15 +6,14 @@ import com.griesba.brewery.beer.order.service.domain.OrderStatusEnum;
 import com.griesba.brewery.beer.order.service.repository.BeerOrderRepository;
 import com.griesba.brewery.beer.order.service.repository.CustomerRepository;
 import com.griesba.brewery.beer.order.service.web.mappers.BeerOrderMapper;
-import com.griesba.brewery.beer.order.service.web.model.BeerOrderDto;
-import com.griesba.brewery.beer.order.service.web.model.BeerOrderPageList;
+import com.griesba.brewery.model.BeerOrderDto;
+import com.griesba.brewery.model.BeerOrderPageList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
