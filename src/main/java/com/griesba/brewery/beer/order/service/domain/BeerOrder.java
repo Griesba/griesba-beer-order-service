@@ -25,7 +25,7 @@ public class  BeerOrder extends BaseEntity {
     @Builder
     public BeerOrder(UUID id, Long version, Timestamp creationDate, Timestamp lastModificationDate,
                      String customerRef, Customer customer, Set<BeerOrderLine> beerOrderLines,
-                     OrderStatusEnum orderStatusEnum, String orderStatusCallbackUrl) {
+                     BeerOrderStatusEnum orderStatusEnum, String orderStatusCallbackUrl) {
         super(id, version, creationDate, lastModificationDate);
         this.customerRef = customerRef;
         this.customer = customer;
@@ -43,7 +43,7 @@ public class  BeerOrder extends BaseEntity {
     @Fetch(FetchMode.JOIN)
     private Set<BeerOrderLine> beerOrderLines;
 
-    private OrderStatusEnum orderStatusEnum = OrderStatusEnum.NEW;
+    private BeerOrderStatusEnum orderStatusEnum = BeerOrderStatusEnum.NEW;
     private String orderStatusCallbackUrl;
 
 

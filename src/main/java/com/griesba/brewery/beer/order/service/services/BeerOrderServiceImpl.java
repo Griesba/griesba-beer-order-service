@@ -2,7 +2,7 @@ package com.griesba.brewery.beer.order.service.services;
 
 import com.griesba.brewery.beer.order.service.domain.BeerOrder;
 import com.griesba.brewery.beer.order.service.domain.Customer;
-import com.griesba.brewery.beer.order.service.domain.OrderStatusEnum;
+import com.griesba.brewery.beer.order.service.domain.BeerOrderStatusEnum;
 import com.griesba.brewery.beer.order.service.repository.BeerOrderRepository;
 import com.griesba.brewery.beer.order.service.repository.CustomerRepository;
 import com.griesba.brewery.beer.order.service.web.mappers.BeerOrderMapper;
@@ -57,7 +57,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
             BeerOrder beerOrder = beerOrderMapper.beerOrderDtoToBeerOrder(beerOrderDto);
             beerOrder.setId(null);
             beerOrder.setCustomer(optCustomer.get());
-            beerOrder.setOrderStatusEnum(OrderStatusEnum.NEW);
+            beerOrder.setOrderStatusEnum(BeerOrderStatusEnum.NEW);
             beerOrder.getBeerOrderLines().forEach(line -> line.setBeerOrder(beerOrder));
 
             BeerOrder savedBeerOrder = beerOrderRepository.saveAndFlush(beerOrder);
@@ -79,7 +79,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
     @Override
     public void pickUpOrder(UUID customerId, UUID orderId) {
         BeerOrder beerOrder = getOrder(customerId, orderId);
-        beerOrder.setOrderStatusEnum(OrderStatusEnum.PICKED_UP);
+        beerOrder.setOrderStatusEnum(BeerOrderStatusEnum.PICKED_UP);
         beerOrderRepository.save(beerOrder);
     }
 

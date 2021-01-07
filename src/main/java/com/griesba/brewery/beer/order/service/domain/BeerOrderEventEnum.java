@@ -1,0 +1,8 @@
+package com.griesba.brewery.beer.order.service.domain;
+
+public enum BeerOrderEventEnum {
+    VALIDATION_PASSED, VALIDATION_FAILED,
+    VALIDATE_ORDER, ALLOCATE_ORDER, CANCEL_ORDER,
+    ALLOCATION_SUCCESS, ALLOCATION_FAILED, ALLOCATION_NO_INVENTORY,
+    BEER_ORDER_PICKED_UP
+}
