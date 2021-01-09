@@ -5,7 +5,9 @@ import com.griesba.brewery.beer.order.service.domain.BeerOrderEventEnum;
 import com.griesba.brewery.beer.order.service.domain.BeerOrderStatusEnum;
 import com.griesba.brewery.beer.order.service.repository.BeerOrderRepository;
 import com.griesba.brewery.beer.order.service.statemachine.OrderStateChangeInterceptor;
+import com.griesba.brewery.model.events.ValidateOrderResult;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
@@ -13,6 +15,13 @@ import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BeerOrderManagerImpl implements BeerOrderManager {
@@ -22,6 +31,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
     private final StateMachineFactory<BeerOrderStatusEnum, BeerOrderEventEnum> stateMachineFactory;
     private final BeerOrderRepository beerOrderRepository;
     private final OrderStateChangeInterceptor orderStateChangeInterceptor;
+    private final EntityManager entityManager;
 
     @Override
     public BeerOrder newBeerOrder(BeerOrder beerOrder) {
@@ -31,6 +41,66 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         BeerOrder savedBeerOder = beerOrderRepository.saveAndFlush(beerOrder);
         sendBeerOrderEvent(savedBeerOder, BeerOrderEventEnum.VALIDATE_ORDER);
         return savedBeerOder;
+    }
+
+    @Override
+    public void processValidationResult(ValidateOrderResult validateOrderResult) {
+        UUID beerOrderId = validateOrderResult.getOrderId();
+        boolean isValid = validateOrderResult.getIsValid();
+        log.debug("Process Validation Result for beerOrderId: " + beerOrderId + " Valid? " + isValid);
+
+        entityManager.flush();// force entity manager to execute persist method
+
+        Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(beerOrderId);
+
+        beerOrderOptional.ifPresentOrElse(beerOrder -> {
+            sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.VALIDATION_PASSED);
+
+            if (isValid) {
+                //wait for status change
+                //awaitForStatus(beerOrderId, BeerOrderStatusEnum.VALIDATED);
+
+                //  interceptor saved the previous one and for hibernate the version of the two object are different
+                BeerOrder validatedBeerOrder = beerOrderRepository.findById(beerOrderId)
+                        .orElseThrow( () -> new RuntimeException("beerOrderId:  " + beerOrderId + " not found"));
+
+                sendBeerOrderEvent(validatedBeerOrder, BeerOrderEventEnum.ALLOCATE_ORDER);
+            } else {
+                sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.VALIDATION_FAILED);
+            }
+
+        }, () -> log.error("Order not found. Id " + beerOrderId));
+    }
+
+    private void awaitForStatus(UUID beerOrderId, BeerOrderStatusEnum statusEnum) {
+
+        AtomicBoolean found = new AtomicBoolean(false);
+        AtomicInteger loopCount = new AtomicInteger(0);
+
+        while (!found.get()) {
+            if (loopCount.incrementAndGet() > 10) {
+                found.set(true);
+                log.debug("Loop Retries exceeded");
+            }
+
+            beerOrderRepository.findById(beerOrderId).ifPresentOrElse(beerOrder -> {
+                if (beerOrder.getOrderStatusEnum().equals(statusEnum)) {
+                    found.set(true);
+                    log.debug("Order Found");
+                } else {
+                    log.debug("Order Status Not Equal. Expected: " + statusEnum.name() + " Found: " + beerOrder.getOrderStatusEnum().name());
+                }
+            }, () -> log.debug("Order Id Not Found"));
+
+            if (!found.get()) {
+                try {
+                    log.debug("Sleeping for retry");
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                    // do nothing
+                }
+            }
+        }
     }
 
     private void sendBeerOrderEvent(BeerOrder beerOrder, BeerOrderEventEnum eventEnum) {
