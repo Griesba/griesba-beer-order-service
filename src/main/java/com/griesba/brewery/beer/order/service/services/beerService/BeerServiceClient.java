@@ -19,7 +19,8 @@ import java.util.UUID;
 public class BeerServiceClient {
 
     private static final String BEER_PATH_V1 = "/api/v1/beer/";
-    private static final String BEER_UPC_PATH_V1 = "/api/v1/beer/beerUPC/{upc}";
+    public static final String BEER_UPC_SERVICE_PATH = "/api/v1/beer/beerUPC/";
+    private static final String BEER_UPC_PATH_V1 = BEER_UPC_SERVICE_PATH + "{upc}";
 
     private String beerServiceHost;
 

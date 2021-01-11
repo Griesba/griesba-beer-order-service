@@ -2,15 +2,19 @@ package com.griesba.brewery.beer.order.service.statemachine;
 
 import com.griesba.brewery.beer.order.service.domain.BeerOrderEventEnum;
 import com.griesba.brewery.beer.order.service.domain.BeerOrderStatusEnum;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.statemachine.action.Action;
+import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
 
 import java.util.EnumSet;
 
+@RequiredArgsConstructor
 @Configuration
+@EnableStateMachineFactory
 public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<BeerOrderStatusEnum, BeerOrderEventEnum> {
     private Action<BeerOrderStatusEnum, BeerOrderEventEnum> validateOrderAction;
     private Action<BeerOrderStatusEnum, BeerOrderEventEnum> allocateOrderAction;
@@ -33,13 +37,21 @@ public class BeerOrderStateMachineConfig extends StateMachineConfigurerAdapter<B
         transitions.withExternal().source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.VALIDATION_PENDING)
                 .event(BeerOrderEventEnum.VALIDATE_ORDER).action(validateOrderAction)
 
-        .and().withExternal().source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.VALIDATED)
+        .and().withExternal().source(BeerOrderStatusEnum.VALIDATION_PENDING).target(BeerOrderStatusEnum.VALIDATED)
                 .event(BeerOrderEventEnum.VALIDATION_PASSED)
 
-        .and().withExternal().source(BeerOrderStatusEnum.NEW).target(BeerOrderStatusEnum.VALIDATION_EXCEPTION)
+        .and().withExternal().source(BeerOrderStatusEnum.VALIDATION_PENDING).target(BeerOrderStatusEnum.VALIDATION_EXCEPTION)
                 .event(BeerOrderEventEnum.VALIDATION_FAILED)
 
         .and().withExternal().source(BeerOrderStatusEnum.VALIDATED).target(BeerOrderStatusEnum.ALLOCATION_PENDING)
-                .event(BeerOrderEventEnum.ALLOCATE_ORDER).action(allocateOrderAction);
+                .event(BeerOrderEventEnum.ALLOCATE_ORDER).action(allocateOrderAction)
+
+        .and().withExternal().source(BeerOrderStatusEnum.ALLOCATION_PENDING).target(BeerOrderStatusEnum.ALLOCATED)
+                .event(BeerOrderEventEnum.ALLOCATION_SUCCESS)
+
+         .and().withExternal().source(BeerOrderStatusEnum.ALLOCATION_PENDING).target(BeerOrderStatusEnum.ALLOCATION_EXCEPTION)
+                .event(BeerOrderEventEnum.ALLOCATION_FAILED)
+
+         ;
     }
 }
