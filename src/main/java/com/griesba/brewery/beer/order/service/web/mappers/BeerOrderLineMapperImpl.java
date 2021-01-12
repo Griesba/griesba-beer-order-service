@@ -6,6 +6,8 @@ import com.griesba.brewery.model.BeerDto;
 import com.griesba.brewery.model.BeerOrderLineDto;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class BeerOrderLineMapperImpl implements BeerOrderLineMapper {
 

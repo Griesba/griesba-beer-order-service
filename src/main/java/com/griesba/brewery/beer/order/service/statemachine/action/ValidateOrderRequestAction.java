@@ -14,6 +14,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -29,6 +30,7 @@ public class ValidateOrderRequestAction implements Action<BeerOrderStatusEnum, B
     private final JmsTemplate jmsTemplate;
     private final BeerOrderMapper beerOrderMapper;
 
+    @Transactional
     @Override
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> stateContext) {
         String beerOrderId = (String) stateContext.getMessage().getHeaders().get(ORDER_ID_HEADER);

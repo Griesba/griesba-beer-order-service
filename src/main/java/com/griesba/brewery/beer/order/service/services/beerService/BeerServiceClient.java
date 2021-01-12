@@ -1,5 +1,6 @@
 package com.griesba.brewery.beer.order.service.services.beerService;
 
+import com.griesba.brewery.beer.order.service.domain.BeerOrder;
 import com.griesba.brewery.model.BeerDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -48,18 +50,19 @@ public class BeerServiceClient {
     }
 
     public BeerDto getBeerByUpc(String upc) {
-        String url = beerServiceHost + BEER_UPC_PATH_V1;
+        String url = beerServiceHost + BEER_UPC_SERVICE_PATH;
        try {
 
            log.info("Querying {} with upc {}", url, upc);
+           return restTemplate.getForObject(url + upc, BeerDto.class);
 
-           ResponseEntity<BeerDto> responseEntity = restTemplate.exchange(
+          /* ResponseEntity<BeerDto> responseEntity = restTemplate.exchange(
                    url,
                    HttpMethod.GET,
                    null,
                    new ParameterizedTypeReference<BeerDto>(){},
                    upc);
-           return responseEntity.getBody();
+           return responseEntity.getBody();*/
        }catch (Exception e) {
            log.error("Get beer by upc failed {}", e.getMessage());
            return null;

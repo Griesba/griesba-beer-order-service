@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jenspiegsa.wiremockextension.WireMockExtension;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.griesba.brewery.beer.order.service.domain.BeerOrder;
 import com.griesba.brewery.beer.order.service.domain.BeerOrderLine;
 import com.griesba.brewery.beer.order.service.domain.BeerOrderStatusEnum;
@@ -13,6 +14,7 @@ import com.griesba.brewery.beer.order.service.repository.BeerOrderRepository;
 import com.griesba.brewery.beer.order.service.repository.CustomerRepository;
 import com.griesba.brewery.beer.order.service.services.beerService.BeerServiceClient;
 import com.griesba.brewery.model.BeerDto;
+import org.junit.ClassRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,7 +34,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-
+@TestPropertySource(properties = "app.scheduling.enable=false")
 @ExtendWith(WireMockExtension.class)
 @SpringBootTest
 class BeerOrderManagerImplIT {
@@ -84,21 +87,17 @@ class BeerOrderManagerImplIT {
 
         wireMockServer.stubFor(
                 WireMock.get(BeerServiceClient.BEER_UPC_SERVICE_PATH + "12345")
-                        .willReturn(okJson(objectMapper.writeValueAsString(beerDto))));
+                        .willReturn(WireMock.okJson(objectMapper.writeValueAsString(beerDto))));
 
         BeerOrder beerOrder = createBeerOrder();
 
         BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
 
-
         Thread.sleep(500); // wait for JMS processing to complete
-
-        BeerOrder savedBeerOrder2 = beerOrderManager.newBeerOrder(beerOrder);
 
         assertNotNull(savedBeerOrder);
 
         assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder.getOrderStatusEnum());
-
 
     }
 

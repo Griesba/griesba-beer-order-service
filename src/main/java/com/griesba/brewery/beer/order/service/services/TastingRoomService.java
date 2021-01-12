@@ -7,6 +7,7 @@ import com.griesba.brewery.beer.order.service.repository.CustomerRepository;
 import com.griesba.brewery.model.BeerOrderDto;
 import com.griesba.brewery.model.BeerOrderLineDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
