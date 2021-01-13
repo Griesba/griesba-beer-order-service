@@ -54,7 +54,7 @@ public class BeerServiceClient {
        try {
 
            log.info("Querying {} with upc {}", url, upc);
-           return restTemplate.getForObject(url + upc, BeerDto.class);
+           return restTemplate.getForObject((url + upc), BeerDto.class);
 
           /* ResponseEntity<BeerDto> responseEntity = restTemplate.exchange(
                    url,
