@@ -28,6 +28,7 @@ import java.util.UUID;
 
 import static com.github.jenspiegsa.wiremockextension.ManagedWireMockServer.with;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -90,11 +91,18 @@ class BeerOrderManagerImplIT {
 
         BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
 
-        Thread.sleep(500); // wait for JMS processing to complete
+       // wait for JMS processing to complete
+        await().untilAsserted(() -> {
+            BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
 
+            assertEquals(BeerOrderStatusEnum.ALLOCATION_PENDING, foundOrder.getOrderStatusEnum());
+        });
+
+
+        BeerOrder  savedBeerOrder2 = beerOrderRepository.findById(savedBeerOrder.getId()).get();
         assertNotNull(savedBeerOrder);
 
-        assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder.getOrderStatusEnum());
+        assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder2.getOrderStatusEnum());
 
     }
 
