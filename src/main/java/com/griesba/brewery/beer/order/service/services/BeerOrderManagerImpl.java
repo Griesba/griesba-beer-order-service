@@ -145,17 +145,18 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
     }
 
     private void updateAllocationQty(BeerOrderDto beerOrderDto) {
-        BeerOrder allocatedOrder = beerOrderRepository.getOne(beerOrderDto.getId());
+        Optional<BeerOrder> optionalBeerOrder = beerOrderRepository.findById(beerOrderDto.getId());
 
-        allocatedOrder.getBeerOrderLines().forEach(beerOrderLine -> {
-            beerOrderDto.getBeerOrderLines().forEach(beerOrderLineDto -> {
-                if (beerOrderLine.getId().equals(beerOrderLineDto.getId())) {
-                    beerOrderLine.setAllocatedQuantity(beerOrderLineDto.getQuantityAllocated());
-                }
+        optionalBeerOrder.ifPresentOrElse(allocatedOrder -> {
+            allocatedOrder.getBeerOrderLines().forEach(beerOrderLine -> {
+                beerOrderDto.getBeerOrderLines().forEach(beerOrderLineDto -> {
+                    if (beerOrderLine.getId().equals(beerOrderLineDto.getId())) {
+                        beerOrderLine.setAllocatedQuantity(beerOrderLineDto.getQuantityAllocated());
+                    }
+                });
             });
-        });
-
-        beerOrderRepository.saveAndFlush(allocatedOrder);
+            beerOrderRepository.saveAndFlush(allocatedOrder);
+        }, () -> log.error("Beer order not found: {}", beerOrderDto.getId()));
     }
 
 }
