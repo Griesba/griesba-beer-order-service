@@ -10,4 +10,8 @@ public interface BeerOrderManager {
     void processValidationResult(ValidateOrderResult validateOrderResult);
 
     void beerOrderAllocationPendingInventory(BeerOrderDto beerOrderDto);
+
+    void beerOrderAllocationSucceeded(BeerOrderDto beerOrderDto);
+
+    void beerOderAllocationFailed(BeerOrderDto beerOrderDto);
 }

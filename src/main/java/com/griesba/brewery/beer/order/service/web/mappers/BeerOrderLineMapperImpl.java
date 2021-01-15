@@ -4,10 +4,12 @@ import com.griesba.brewery.beer.order.service.domain.BeerOrderLine;
 import com.griesba.brewery.beer.order.service.services.beerService.BeerServiceClient;
 import com.griesba.brewery.model.BeerDto;
 import com.griesba.brewery.model.BeerOrderLineDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class BeerOrderLineMapperImpl implements BeerOrderLineMapper {
 
@@ -40,6 +42,8 @@ public class BeerOrderLineMapperImpl implements BeerOrderLineMapper {
                     .withBeerId(beerDto.getId())
                     .withVersion(beerDto.getVersion())
                     .withBeerName(beerDto.getName());
+        } else {
+            log.error("Beer not found for upc {}", line.getUpc());
         }
 
         return beerOrderLineDtoBuilder.build();

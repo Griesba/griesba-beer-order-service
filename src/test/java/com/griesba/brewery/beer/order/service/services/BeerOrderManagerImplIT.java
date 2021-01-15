@@ -22,6 +22,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.TestPropertySource;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -92,18 +93,32 @@ class BeerOrderManagerImplIT {
         BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
 
        // wait for JMS processing to complete
-        await().untilAsserted(() -> {
+        await().atMost(Duration.ofMillis(1495)).untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
 
             assertEquals(BeerOrderStatusEnum.ALLOCATION_PENDING, foundOrder.getOrderStatusEnum());
         });
 
+        //await().atMost(Duration.ofMillis(1400)).until( () -> BeerOrderStatusEnum.ALLOCATION_PENDING == beerOrderRepository.findById(beerDto.getId()).get().getOrderStatusEnum());
+
+        await().atMost(Duration.ofMillis(1500)).untilAsserted(() -> {
+            BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
+            BeerOrderLine beerOrderLine = foundOrder.getBeerOrderLines().iterator().next();
+
+            assertEquals(beerOrderLine.getOrderQuantity(), beerOrderLine.getAllocatedQuantity());
+        });
+
+
 
         BeerOrder  savedBeerOrder2 = beerOrderRepository.findById(savedBeerOrder.getId()).get();
-        assertNotNull(savedBeerOrder);
+
+        assertNotNull(savedBeerOrder2);
 
         assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder2.getOrderStatusEnum());
 
+        savedBeerOrder2.getBeerOrderLines().forEach(beerOrderLine -> {
+            assertEquals(beerOrderLine.getOrderQuantity(), beerOrderLine.getAllocatedQuantity());
+        });
     }
 
     private BeerOrder createBeerOrder() {

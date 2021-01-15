@@ -35,7 +35,7 @@ public class ValidateOrderRequestAction implements Action<BeerOrderStatusEnum, B
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> stateContext) {
         String beerOrderId = (String) stateContext.getMessage().getHeaders().get(ORDER_ID_HEADER);
 
-        log.info("Receive validate order event for beerOrderId", beerOrderId);
+        log.info("Receive validate order request event for beerOrderId {}", beerOrderId);
 
         Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(UUID.fromString(beerOrderId));
 

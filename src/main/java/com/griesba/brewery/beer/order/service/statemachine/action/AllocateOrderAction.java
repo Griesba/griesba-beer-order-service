@@ -7,6 +7,7 @@ import com.griesba.brewery.beer.order.service.domain.BeerOrderStatusEnum;
 import com.griesba.brewery.beer.order.service.repository.BeerOrderRepository;
 import com.griesba.brewery.beer.order.service.services.BeerOrderManagerImpl;
 import com.griesba.brewery.beer.order.service.web.mappers.BeerOrderMapper;
+import com.griesba.brewery.model.events.AllocateOrderRequest;
 import com.griesba.brewery.model.events.AllocationOrderResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,16 +30,20 @@ public class AllocateOrderAction implements Action<BeerOrderStatusEnum, BeerOrde
 
     @Override
     public void execute(StateContext<BeerOrderStatusEnum, BeerOrderEventEnum> stateContext) {
+
         String beerOrderId = (String) stateContext.getMessage().getHeaders().get(BeerOrderManagerImpl.ORDER_ID_HEADER);
+
+        log.info("Allocate ({}) order action for beerOrderId {}", stateContext.getSource().getId(), beerOrderId);
+
         Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(UUID.fromString(beerOrderId));
 
         beerOrderOptional.ifPresentOrElse(beerOrder -> {
             jmsTemplate.convertAndSend(JmsConfig.ALLOCATE_ORDER_QUEUE,
-                    new AllocationOrderResponse.AllocationOrderResponseBuilder()
+                    new AllocateOrderRequest.AllocateOrderRequestBuilder()
                             .withBeerOrderDto(beerOrderMapper.beerOrderToBeerOrderDto(beerOrder))
                             .build());
 
-            log.debug("Send allocate request to queue for order Id " + beerOrderId);
+            log.debug("Send allocate request to ALLOCATE_ORDER_QUEUE for order Id " + beerOrderId);
         }, () -> log.error("Order nor found. Id " + beerOrderId));
     }
 }

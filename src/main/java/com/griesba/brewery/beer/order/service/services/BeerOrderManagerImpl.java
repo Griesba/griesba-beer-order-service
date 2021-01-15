@@ -69,12 +69,13 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
                 BeerOrder validatedBeerOrder = beerOrderRepository.findById(beerOrderId)
                         .orElseThrow( () -> new RuntimeException("beerOrderId:  " + beerOrderId + " not found"));
 
+                log.debug("Validation passed for beerOrderId {}", validatedBeerOrder.getId());
                 sendBeerOrderEvent(validatedBeerOrder, BeerOrderEventEnum.ALLOCATE_ORDER);
             } else {
                 sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.VALIDATION_FAILED);
             }
 
-        }, () -> log.error("Order not found. Id " + beerOrderId));
+        }, () -> log.error("Order not found for Id " + beerOrderId));
     }
 
     private void awaitForStatus(UUID beerOrderId, BeerOrderStatusEnum statusEnum) {
@@ -115,6 +116,25 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         beerOrderOptional.ifPresentOrElse(beerOrder -> {
             sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_NO_INVENTORY);
             updateAllocationQty(beerOrderDto);
+        }, () -> log.error("Order nor found. Id " + beerOrderDto.getId()));
+    }
+
+    @Override
+    public void beerOrderAllocationSucceeded(BeerOrderDto beerOrderDto) {
+        Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(beerOrderDto.getId());
+
+        beerOrderOptional.ifPresentOrElse(beerOrder -> {
+            sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_SUCCESS);
+            updateAllocationQty(beerOrderDto);
+        }, () -> log.error("Order nor found. Id " + beerOrderDto.getId()));
+    }
+
+    @Override
+    public void beerOderAllocationFailed(BeerOrderDto beerOrderDto) {
+        Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(beerOrderDto.getId());
+
+        beerOrderOptional.ifPresentOrElse(beerOrder -> {
+            sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_FAILED);
         }, () -> log.error("Order nor found. Id " + beerOrderDto.getId()));
     }
 
