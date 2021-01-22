@@ -4,6 +4,8 @@ import com.griesba.brewery.beer.order.service.domain.BeerOrder;
 import com.griesba.brewery.model.BeerOrderDto;
 import com.griesba.brewery.model.events.ValidateOrderResult;
 
+import java.util.UUID;
+
 public interface BeerOrderManager {
     BeerOrder newBeerOrder(BeerOrder beerOrder);
 
@@ -14,4 +16,6 @@ public interface BeerOrderManager {
     void beerOrderAllocationSucceeded(BeerOrderDto beerOrderDto);
 
     void beerOderAllocationFailed(BeerOrderDto beerOrderDto);
+
+    void beerOrderPickup(UUID id);
 }

@@ -93,22 +93,22 @@ class BeerOrderManagerImplIT {
         BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
 
        // wait for JMS processing to complete
-        await().atMost(Duration.ofMillis(1495)).untilAsserted(() -> {
+        await().atMost(Duration.ofMillis(25000)).untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
 
-            assertEquals(BeerOrderStatusEnum.ALLOCATION_PENDING, foundOrder.getOrderStatusEnum());
+            assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatusEnum());
         });
 
-        //await().atMost(Duration.ofMillis(1400)).until( () -> BeerOrderStatusEnum.ALLOCATION_PENDING == beerOrderRepository.findById(beerDto.getId()).get().getOrderStatusEnum());
+        BeerOrder  savedBeerOrder1 = beerOrderRepository.findById(savedBeerOrder.getId()).get();
 
-        await().atMost(Duration.ofMillis(1500)).untilAsserted(() -> {
+        assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder1.getOrderStatusEnum());
+
+        await().atMost(Duration.ofMillis(5000)).untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
             BeerOrderLine beerOrderLine = foundOrder.getBeerOrderLines().iterator().next();
 
             assertEquals(beerOrderLine.getOrderQuantity(), beerOrderLine.getAllocatedQuantity());
         });
-
-
 
         BeerOrder  savedBeerOrder2 = beerOrderRepository.findById(savedBeerOrder.getId()).get();
 
@@ -119,6 +119,42 @@ class BeerOrderManagerImplIT {
         savedBeerOrder2.getBeerOrderLines().forEach(beerOrderLine -> {
             assertEquals(beerOrderLine.getOrderQuantity(), beerOrderLine.getAllocatedQuantity());
         });
+    }
+
+    @Test
+    public void testAllocatedToPickup() throws JsonProcessingException {
+        BeerDto beerDto = new BeerDto.BeerDtoBuilder<>().withId(beerId).withUpc("12345").build();
+
+        wireMockServer.stubFor(
+                WireMock.get(BeerServiceClient.BEER_UPC_SERVICE_PATH + "12345")
+                        .willReturn(WireMock.okJson(objectMapper.writeValueAsString(beerDto))));
+
+        BeerOrder beerOrder = createBeerOrder();
+
+        BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
+
+        // wait for JMS processing to complete
+        await().atMost(Duration.ofMillis(20000)).untilAsserted(() -> {
+            BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
+
+            assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatusEnum());
+        });
+
+        BeerOrder  savedBeerOrder1 = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+
+        assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder1.getOrderStatusEnum());
+
+        beerOrderManager.beerOrderPickup(savedBeerOrder.getId());
+
+        await().untilAsserted(() -> {
+            BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
+            assertEquals(BeerOrderStatusEnum.PICKED_UP, foundOrder.getOrderStatusEnum());
+        });
+
+        BeerOrder savedBeerOrder3 = beerOrderRepository.findById(savedBeerOrder.getId()).get();
+
+        assertEquals(BeerOrderStatusEnum.PICKED_UP, savedBeerOrder3.getOrderStatusEnum());
+
     }
 
     private BeerOrder createBeerOrder() {

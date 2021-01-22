@@ -34,7 +34,7 @@ public class BeerOrderLineMapperImpl implements BeerOrderLineMapper {
                 .withCreationDate(this.dateMapper.asOffsetDateTime(line.getCreationDate()))
                 .withLastModificationDate(this.dateMapper.asOffsetDateTime(line.getLastModificationDate()))
                 .withUpc(line.getUpc())
-                .withOrderQuantity(line.getQuantityOnHand());
+                .withOrderQuantity(line.getOrderQuantity());
 
         if (beerDto != null) {
             beerOrderLineDtoBuilder
@@ -61,7 +61,7 @@ public class BeerOrderLineMapperImpl implements BeerOrderLineMapper {
                 .lastModificationDate(this.dateMapper.asTimestamp(dto.getLastModificationDate()))
                 .beerId(dto.getBeerId())
                 .upc(dto.getUpc())
-                .quantityOnHand(dto.getOrderQuantity())
+                .orderQuantity(dto.getOrderQuantity())
                 .build();
     }
 }

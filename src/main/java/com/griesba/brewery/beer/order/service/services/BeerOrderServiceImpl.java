@@ -8,6 +8,7 @@ import com.griesba.brewery.beer.order.service.repository.CustomerRepository;
 import com.griesba.brewery.beer.order.service.web.mappers.BeerOrderMapper;
 import com.griesba.brewery.model.BeerOrderDto;
 import com.griesba.brewery.model.BeerOrderPageList;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -21,19 +22,14 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class BeerOrderServiceImpl implements BeerOrderService {
-    private BeerOrderRepository beerOrderRepository;
-    private CustomerRepository customerRepository;
-    private BeerOrderMapper beerOrderMapper;
-    private ApplicationEventPublisher applicationPushBuilder;
+    private final BeerOrderRepository beerOrderRepository;
+    private final CustomerRepository customerRepository;
+    private final BeerOrderMapper beerOrderMapper;
+    private final ApplicationEventPublisher applicationPushBuilder;
+    private final BeerOrderManager beerOrderManager;
 
-    public BeerOrderServiceImpl(BeerOrderRepository beerOrderRepository, CustomerRepository customerRepository,
-                                BeerOrderMapper beerOrderMapper, ApplicationEventPublisher applicationEventPublisher) {
-        this.beerOrderRepository = beerOrderRepository;
-        this.customerRepository = customerRepository;
-        this.beerOrderMapper = beerOrderMapper;
-        this.applicationPushBuilder = applicationEventPublisher;
-    }
 
     @Override
     public BeerOrderPageList listOrders(UUID customerId, Pageable pageable) {
@@ -60,7 +56,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
             beerOrder.setOrderStatusEnum(BeerOrderStatusEnum.NEW);
             beerOrder.getBeerOrderLines().forEach(line -> line.setBeerOrder(beerOrder));
 
-            BeerOrder savedBeerOrder = beerOrderRepository.saveAndFlush(beerOrder);
+            BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
 
             log.debug("Saved Beer Order: " + beerOrder.getId());
 
@@ -78,9 +74,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     @Override
     public void pickUpOrder(UUID customerId, UUID orderId) {
-        BeerOrder beerOrder = getOrder(customerId, orderId);
-        beerOrder.setOrderStatusEnum(BeerOrderStatusEnum.PICKED_UP);
-        beerOrderRepository.save(beerOrder);
+        beerOrderManager.beerOrderPickup(orderId);
     }
 
     private BeerOrder getOrder(UUID customerId, UUID orderId) {

@@ -36,7 +36,7 @@ public class BeerAllocationListener {
             }
         }
 */
-
+        log.debug("Received allocation request beer  order for {}", request.getBeerOrderDto().getId());
         boolean finalPendingInventory = pendingInventory;
 
         request.getBeerOrderDto().getBeerOrderLines().forEach(beerOrderLineDto -> {
@@ -45,7 +45,10 @@ public class BeerAllocationListener {
             } else {
                 beerOrderLineDto.setQuantityAllocated(beerOrderLineDto.getOrderQuantity());
             }*/
-            beerOrderLineDto.setQuantityAllocated(beerOrderLineDto.getOrderQuantity());
+
+            log.debug("Before beerOrderLineDto.getQuantityAllocated {}", beerOrderLineDto.getAllocatedQuantity());
+            beerOrderLineDto.setAllocatedQuantity(beerOrderLineDto.getOrderQuantity());
+            log.debug("After beerOrderLineDto.getQuantityAllocated {}", beerOrderLineDto.getAllocatedQuantity());
         });
 
         if (sendResponse) {

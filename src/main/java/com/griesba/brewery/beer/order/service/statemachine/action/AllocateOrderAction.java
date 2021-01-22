@@ -43,7 +43,7 @@ public class AllocateOrderAction implements Action<BeerOrderStatusEnum, BeerOrde
                             .withBeerOrderDto(beerOrderMapper.beerOrderToBeerOrderDto(beerOrder))
                             .build());
 
-            log.debug("Send allocate request to ALLOCATE_ORDER_QUEUE for order Id " + beerOrderId);
+            log.debug("Sent allocation request to ALLOCATE_ORDER_QUEUE for order Id " + beerOrderId);
         }, () -> log.error("Order nor found. Id " + beerOrderId));
     }
 }

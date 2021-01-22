@@ -24,7 +24,7 @@ public class BeerOrderValidationListener {
         boolean sendResponse = true;
 
         ValidateBeerOrderRequest request = (ValidateBeerOrderRequest) message.getPayload();
-        log.debug("################ I run ##############");
+        log.debug("Validation request on VALIDATE_ORDER_QUEUE for beer order id {}", request.getBeerOrderDto().getId());
 
         jmsTemplate.convertAndSend(JmsConfig.VALIDATE_ORDER_RESPONSE_QUEUE,
                 new ValidateOrderResult.ValidateOrderResultBuilder()

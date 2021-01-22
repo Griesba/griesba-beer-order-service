@@ -37,7 +37,7 @@ public class TastingRoomService {
 
 
     @Transactional
-    @Scheduled(fixedRate = 2000)//every 2 seconds
+    @Scheduled(fixedRate = 10000)//every 2 seconds
     public void placeTastingRoomOrder() {
         List<Customer> customers = customerRepository.findCustomerByCustomerNameLike(BeerOrderBootStrap.TASTING_ROOM);
         if (customers.size() == 1) {

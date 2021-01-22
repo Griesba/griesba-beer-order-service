@@ -1,5 +1,7 @@
 package com.griesba.brewery.beer.order.service.statemachine.action;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.griesba.brewery.beer.order.service.config.JmsConfig;
 import com.griesba.brewery.beer.order.service.domain.BeerOrder;
 import com.griesba.brewery.beer.order.service.domain.BeerOrderEventEnum;
@@ -41,11 +43,21 @@ public class ValidateOrderRequestAction implements Action<BeerOrderStatusEnum, B
 
         ValidateBeerOrderRequest.ValidateBeerOrderRequestBuilder validateBORBuilder = new ValidateBeerOrderRequest.ValidateBeerOrderRequestBuilder();
 
+
         beerOrderOptional.ifPresentOrElse(beerOrder -> {
+            ValidateBeerOrderRequest beerOrderValidationRequest =  validateBORBuilder.withBeerOrderDto(beerOrderMapper.beerOrderToBeerOrderDto(beerOrder)).build();
             jmsTemplate.convertAndSend(
                     JmsConfig.VALIDATE_ORDER_QUEUE,
-                    validateBORBuilder.withBeerOrderDto(beerOrderMapper.beerOrderToBeerOrderDto(beerOrder)).build());
-            log.debug("Send validation JMS request to queue for order Id " + beerOrderId);
+                    beerOrderValidationRequest
+                    );
+
+            try {
+                log.debug("Send validation JMS request to queue for order Id {}", beerOrderId);
+                log.info(new ObjectMapper().writeValueAsString(beerOrderValidationRequest));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
         }, () -> log.error("Order nor found. Id " + beerOrderId));
     }
 }

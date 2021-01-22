@@ -32,6 +32,17 @@ public class BeerOrderBootStrap implements CommandLineRunner {
     }
 
     private void loadCustomerData() {
+        if (customerRepository.findCustomerByCustomerNameLike(BeerOrderBootStrap.TASTING_ROOM).size() == 0) {
+            Customer savedCustomer = customerRepository.saveAndFlush(Customer.builder()
+                    .customerName(TASTING_ROOM)
+                    .apiKey(UUID.randomUUID())
+                    .build());
+
+            log.debug("Tasting Room Customer Id: " + savedCustomer.getId().toString());
+        }
+    }
+
+/*    private void loadCustomerData() {
         if (customerRepository.count() == 0) {
             Customer customer = customerRepository.save(Customer.builder()
                     .customerName(TASTING_ROOM)
@@ -52,5 +63,5 @@ public class BeerOrderBootStrap implements CommandLineRunner {
                 log.info("customer 3: {}", customerUUIDs.get(2) );
             }
         }
-    }
+    }*/
 }

@@ -1,5 +1,7 @@
 package com.griesba.brewery.beer.order.service.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.griesba.brewery.beer.order.service.domain.BeerOrder;
 import com.griesba.brewery.beer.order.service.domain.BeerOrderEventEnum;
 import com.griesba.brewery.beer.order.service.domain.BeerOrderStatusEnum;
@@ -42,6 +44,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
 
         BeerOrder savedBeerOder = beerOrderRepository.saveAndFlush(beerOrder);
         sendBeerOrderEvent(savedBeerOder, BeerOrderEventEnum.VALIDATE_ORDER);
+        log.debug("State machine stated with event: {}", BeerOrderEventEnum.VALIDATE_ORDER);
         return savedBeerOder;
     }
 
@@ -109,9 +112,12 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         }
     }
 
+    @Transactional
     @Override
     public void beerOrderAllocationPendingInventory(BeerOrderDto beerOrderDto) {
         Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(beerOrderDto.getId());
+
+        log.debug("process order allocation pending");
 
         beerOrderOptional.ifPresentOrElse(beerOrder -> {
             sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_NO_INVENTORY);
@@ -119,9 +125,12 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         }, () -> log.error("Order nor found. Id " + beerOrderDto.getId()));
     }
 
+    @Transactional
     @Override
     public void beerOrderAllocationSucceeded(BeerOrderDto beerOrderDto) {
         Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(beerOrderDto.getId());
+
+        log.debug("process order allocation success");
 
         beerOrderOptional.ifPresentOrElse(beerOrder -> {
             sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_SUCCESS);
@@ -136,6 +145,16 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         beerOrderOptional.ifPresentOrElse(beerOrder -> {
             sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.ALLOCATION_FAILED);
         }, () -> log.error("Order nor found. Id " + beerOrderDto.getId()));
+    }
+
+
+    @Override
+    public void beerOrderPickup(UUID beerOrderId) {
+        Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(beerOrderId);
+
+        beerOrderOptional.ifPresentOrElse( beerOrder ->
+                sendBeerOrderEvent(beerOrder, BeerOrderEventEnum.BEER_ORDER_PICKED_UP)
+                , () -> log.error("Order nor found for Id {}", beerOrderId));
     }
 
     private void sendBeerOrderEvent(BeerOrder beerOrder, BeerOrderEventEnum eventEnum) {
@@ -166,12 +185,26 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
 
     private void updateAllocationQty(BeerOrderDto beerOrderDto) {
         Optional<BeerOrder> optionalBeerOrder = beerOrderRepository.findById(beerOrderDto.getId());
+        log.debug("update allocation qty for {}", beerOrderDto.getId());
 
         optionalBeerOrder.ifPresentOrElse(allocatedOrder -> {
+            try {
+                log.debug("beer order from db {}", new ObjectMapper().writeValueAsString(allocatedOrder));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                log.debug("beer order from jms {}", new ObjectMapper().writeValueAsString(beerOrderDto));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
             allocatedOrder.getBeerOrderLines().forEach(beerOrderLine -> {
                 beerOrderDto.getBeerOrderLines().forEach(beerOrderLineDto -> {
                     if (beerOrderLine.getId().equals(beerOrderLineDto.getId())) {
-                        beerOrderLine.setAllocatedQuantity(beerOrderLineDto.getQuantityAllocated());
+                        log.debug("before beerOrderLine.getAllocatedQuantity {}", beerOrderLine.getAllocatedQuantity());
+                        beerOrderLine.setAllocatedQuantity(beerOrderLineDto.getAllocatedQuantity());
+                        log.debug("after beerOrderLine.getAllocatedQuantity {}", beerOrderLine.getAllocatedQuantity());
                     }
                 });
             });
