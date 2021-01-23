@@ -37,7 +37,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
         if (optCustomer.isPresent()) {
             Page<BeerOrder> beerOrderPage = beerOrderRepository.findAllByCustomer(optCustomer.get(), pageable);
             return new BeerOrderPageList(
-                    beerOrderPage.stream().map(beerOrderMapper::beerOrderToBeerOrderDto).collect(Collectors.toList()),
+                    beerOrderPage.stream().map(beerOrderMapper::beerOrderToDto).collect(Collectors.toList()),
                     PageRequest.of(beerOrderPage.getPageable().getPageNumber(), beerOrderPage.getPageable().getPageSize()),
                     beerOrderPage.getTotalElements());
         }
@@ -50,17 +50,17 @@ public class BeerOrderServiceImpl implements BeerOrderService {
         Optional<Customer> optCustomer = customerRepository.findById(customerId);
 
         if (optCustomer.isPresent()) {
-            BeerOrder beerOrder = beerOrderMapper.beerOrderDtoToBeerOrder(beerOrderDto);
+            BeerOrder beerOrder = beerOrderMapper.dtoToBeerOrder(beerOrderDto);
             beerOrder.setId(null);
             beerOrder.setCustomer(optCustomer.get());
-            beerOrder.setOrderStatusEnum(BeerOrderStatusEnum.NEW);
+            beerOrder.setOrderStatus(BeerOrderStatusEnum.NEW);
             beerOrder.getBeerOrderLines().forEach(line -> line.setBeerOrder(beerOrder));
 
             BeerOrder savedBeerOrder = beerOrderManager.newBeerOrder(beerOrder);
 
-            log.debug("Saved Beer Order: " + beerOrder.getId());
+            log.debug("Saved Beer Order: {} ", beerOrder);
 
-            return beerOrderMapper.beerOrderToBeerOrderDto(savedBeerOrder);
+            return beerOrderMapper.beerOrderToDto(savedBeerOrder);
         }
 
         log.debug("Customer {} not found", customerId);
@@ -69,7 +69,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     @Override
     public BeerOrderDto getBeerOrder(UUID customerId, UUID orderId) {
-        return beerOrderMapper.beerOrderToBeerOrderDto(getOrder(customerId, orderId));
+        return beerOrderMapper.beerOrderToDto(getOrder(customerId, orderId));
     }
 
     @Override

@@ -8,7 +8,6 @@ import com.griesba.brewery.beer.order.service.repository.BeerOrderRepository;
 import com.griesba.brewery.beer.order.service.services.BeerOrderManagerImpl;
 import com.griesba.brewery.beer.order.service.web.mappers.BeerOrderMapper;
 import com.griesba.brewery.model.events.AllocateOrderRequest;
-import com.griesba.brewery.model.events.AllocationOrderResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.core.JmsTemplate;
@@ -40,7 +39,7 @@ public class AllocateOrderAction implements Action<BeerOrderStatusEnum, BeerOrde
         beerOrderOptional.ifPresentOrElse(beerOrder -> {
             jmsTemplate.convertAndSend(JmsConfig.ALLOCATE_ORDER_QUEUE,
                     new AllocateOrderRequest.AllocateOrderRequestBuilder()
-                            .withBeerOrderDto(beerOrderMapper.beerOrderToBeerOrderDto(beerOrder))
+                            .withBeerOrderDto(beerOrderMapper.beerOrderToDto(beerOrder))
                             .build());
 
             log.debug("Sent allocation request to ALLOCATE_ORDER_QUEUE for order Id " + beerOrderId);

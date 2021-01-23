@@ -1,9 +1,6 @@
 package com.griesba.brewery.beer.order.service.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -22,12 +19,12 @@ public class  BeerOrder extends BaseEntity {
     @Builder
     public BeerOrder(UUID id, Long version, Timestamp creationDate, Timestamp lastModificationDate,
                      String customerRef, Customer customer, Set<BeerOrderLine> beerOrderLines,
-                     BeerOrderStatusEnum orderStatusEnum, String orderStatusCallbackUrl) {
+                     BeerOrderStatusEnum orderStatus, String orderStatusCallbackUrl) {
         super(id, version, creationDate, lastModificationDate);
         this.customerRef = customerRef;
         this.customer = customer;
         this.beerOrderLines = beerOrderLines;
-        this.orderStatusEnum = orderStatusEnum;
+        this.orderStatus = orderStatus;
         this.orderStatusCallbackUrl = orderStatusCallbackUrl;
     }
 
@@ -41,10 +38,18 @@ public class  BeerOrder extends BaseEntity {
     private Set<BeerOrderLine> beerOrderLines;
 
     @Enumerated(EnumType.STRING)
-    private BeerOrderStatusEnum orderStatusEnum = BeerOrderStatusEnum.NEW;
+    private BeerOrderStatusEnum orderStatus = BeerOrderStatusEnum.NEW;
 
     private String orderStatusCallbackUrl;
 
-
-
+    @Override
+    public String toString() {
+        return "BeerOrder{" +
+                "customerRef='" + customerRef + '\'' +
+                ", customer=" + customer +
+                ", beerOrderLines=" + beerOrderLines +
+                ", orderStatus=" + orderStatus +
+                ", orderStatusCallbackUrl='" + orderStatusCallbackUrl + '\'' +
+                '}';
+    }
 }

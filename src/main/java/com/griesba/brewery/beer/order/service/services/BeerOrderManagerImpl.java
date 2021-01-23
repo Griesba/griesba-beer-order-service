@@ -19,7 +19,6 @@ import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -40,7 +39,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
     @Override
     public BeerOrder newBeerOrder(BeerOrder beerOrder) {
         beerOrder.setId(null);
-        beerOrder.setOrderStatusEnum(BeerOrderStatusEnum.NEW);
+        beerOrder.setOrderStatus(BeerOrderStatusEnum.NEW);
 
         BeerOrder savedBeerOder = beerOrderRepository.saveAndFlush(beerOrder);
         sendBeerOrderEvent(savedBeerOder, BeerOrderEventEnum.VALIDATE_ORDER);
@@ -93,11 +92,11 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
             }
 
             beerOrderRepository.findById(beerOrderId).ifPresentOrElse(beerOrder -> {
-                if (beerOrder.getOrderStatusEnum().equals(statusEnum)) {
+                if (beerOrder.getOrderStatus().equals(statusEnum)) {
                     found.set(true);
                     log.debug("Order Found");
                 } else {
-                    log.debug("Order Status Not Equal. Expected: " + statusEnum.name() + " Found: " + beerOrder.getOrderStatusEnum().name());
+                    log.debug("Order Status Not Equal. Expected: " + statusEnum.name() + " Found: " + beerOrder.getOrderStatus().name());
                 }
             }, () -> log.debug("Order Id Not Found"));
 
@@ -175,7 +174,7 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         sm.getStateMachineAccessor()
                 .doWithRegion(sma -> {
                     sma.addStateMachineInterceptor(orderStateChangeInterceptor);
-                    sma.resetStateMachine(new DefaultStateMachineContext<>(beerOrder.getOrderStatusEnum(), null, null, null));
+                    sma.resetStateMachine(new DefaultStateMachineContext<>(beerOrder.getOrderStatus(), null, null, null));
                 });
 
         sm.start();
@@ -188,17 +187,11 @@ public class BeerOrderManagerImpl implements BeerOrderManager {
         log.debug("update allocation qty for {}", beerOrderDto.getId());
 
         optionalBeerOrder.ifPresentOrElse(allocatedOrder -> {
-            try {
-                log.debug("beer order from db {}", new ObjectMapper().writeValueAsString(allocatedOrder));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
+            log.debug("update allocation: beer order from db {}", allocatedOrder);
 
-            try {
-                log.debug("beer order from jms {}", new ObjectMapper().writeValueAsString(beerOrderDto));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
+
+            log.debug("update allocation: beer order from jms {}", beerOrderDto);
+
             allocatedOrder.getBeerOrderLines().forEach(beerOrderLine -> {
                 beerOrderDto.getBeerOrderLines().forEach(beerOrderLineDto -> {
                     if (beerOrderLine.getId().equals(beerOrderLineDto.getId())) {

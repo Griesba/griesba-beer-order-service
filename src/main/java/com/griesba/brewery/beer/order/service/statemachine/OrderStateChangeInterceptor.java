@@ -38,7 +38,7 @@ public class OrderStateChangeInterceptor extends StateMachineInterceptorAdapter<
                     log.info("Saving state for order id: " + beerOrderId + " status:  "+ state.getId());
 
                     BeerOrder beerOrder = beerOrderRepository.getOne(UUID.fromString(beerOrderId));
-                    beerOrder.setOrderStatusEnum(state.getId());
+                    beerOrder.setOrderStatus(state.getId());
                     //save and remove from memory
                     beerOrderRepository.saveAndFlush(beerOrder);
                 });

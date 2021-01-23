@@ -16,8 +16,6 @@ public interface BeerOrderRepository extends JpaRepository<BeerOrder, UUID> {
 
     Page<BeerOrder> findAllByCustomer(Customer customer, Pageable pageable);
 
-    List<BeerOrder> findAllByOrderStatusEnum(BeerOrderStatusEnum orderStatusEnum);
-
     // h2 does not handle uuid very well
     //@Lock(LockModeType.PESSIMISTIC_WRITE)
     //BeerOrder findAllById(UUID uuid);

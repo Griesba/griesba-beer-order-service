@@ -38,4 +38,15 @@ public class BeerOrderLine extends BaseEntity {
         this.allocatedQuantity = allocatedQuantity;
         this.orderQuantity = orderQuantity;
     }
+
+    @Override
+    public String toString() {
+        return "BeerOrderLine{" +
+                "beerId=" + beerId +
+                ", upc='" + upc + '\'' +
+                ", orderQuantity=" + orderQuantity +
+                ", quantityOnHand=" + quantityOnHand +
+                ", allocatedQuantity=" + allocatedQuantity +
+                '}';
+    }
 }

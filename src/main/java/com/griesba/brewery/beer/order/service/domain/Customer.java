@@ -1,13 +1,17 @@
 package com.griesba.brewery.beer.order.service.domain;
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.OneToMany;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -17,7 +21,8 @@ public class Customer extends BaseEntity {
 
     private String customerName;
 
-    @Column(length = 36, columnDefinition = "varchar")
+    @Type(type="org.hibernate.type.UUIDCharType")
+    @Column(length = 36, columnDefinition = "varchar" )
     private UUID apiKey;
 
     @OneToMany( mappedBy = "customer")
@@ -32,5 +37,13 @@ public class Customer extends BaseEntity {
         this.customerName = customerName;
         this.apiKey = apiKey;
         this.beerOrders = beerOrders;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "customerName='" + customerName + '\'' +
+                ", apiKey=" + apiKey +
+                '}';
     }
 }

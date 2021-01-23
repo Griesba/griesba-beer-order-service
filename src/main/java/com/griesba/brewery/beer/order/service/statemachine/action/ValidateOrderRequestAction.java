@@ -8,7 +8,6 @@ import com.griesba.brewery.beer.order.service.domain.BeerOrderEventEnum;
 import com.griesba.brewery.beer.order.service.domain.BeerOrderStatusEnum;
 import com.griesba.brewery.beer.order.service.repository.BeerOrderRepository;
 import com.griesba.brewery.beer.order.service.web.mappers.BeerOrderMapper;
-import com.griesba.brewery.model.BeerOrderDto;
 import com.griesba.brewery.model.events.ValidateBeerOrderRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +44,7 @@ public class ValidateOrderRequestAction implements Action<BeerOrderStatusEnum, B
 
 
         beerOrderOptional.ifPresentOrElse(beerOrder -> {
-            ValidateBeerOrderRequest beerOrderValidationRequest =  validateBORBuilder.withBeerOrderDto(beerOrderMapper.beerOrderToBeerOrderDto(beerOrder)).build();
+            ValidateBeerOrderRequest beerOrderValidationRequest =  validateBORBuilder.withBeerOrderDto(beerOrderMapper.beerOrderToDto(beerOrder)).build();
             jmsTemplate.convertAndSend(
                     JmsConfig.VALIDATE_ORDER_QUEUE,
                     beerOrderValidationRequest
