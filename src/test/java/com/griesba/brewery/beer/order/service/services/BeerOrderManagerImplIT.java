@@ -96,12 +96,12 @@ class BeerOrderManagerImplIT {
         await().atMost(Duration.ofMillis(25000)).untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
 
-            assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatusEnum());
+            assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatus());
         });
 
         BeerOrder  savedBeerOrder1 = beerOrderRepository.findById(savedBeerOrder.getId()).get();
 
-        assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder1.getOrderStatusEnum());
+        assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder1.getOrderStatus());
 
         await().atMost(Duration.ofMillis(5000)).untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
@@ -114,7 +114,7 @@ class BeerOrderManagerImplIT {
 
         assertNotNull(savedBeerOrder2);
 
-        assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder2.getOrderStatusEnum());
+        assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder2.getOrderStatus());
 
         savedBeerOrder2.getBeerOrderLines().forEach(beerOrderLine -> {
             assertEquals(beerOrderLine.getOrderQuantity(), beerOrderLine.getAllocatedQuantity());
@@ -137,23 +137,23 @@ class BeerOrderManagerImplIT {
         await().atMost(Duration.ofMillis(20000)).untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
 
-            assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatusEnum());
+            assertEquals(BeerOrderStatusEnum.ALLOCATED, foundOrder.getOrderStatus());
         });
 
         BeerOrder  savedBeerOrder1 = beerOrderRepository.findById(savedBeerOrder.getId()).get();
 
-        assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder1.getOrderStatusEnum());
+        assertEquals(BeerOrderStatusEnum.ALLOCATED, savedBeerOrder1.getOrderStatus());
 
         beerOrderManager.beerOrderPickup(savedBeerOrder.getId());
 
         await().untilAsserted(() -> {
             BeerOrder foundOrder = beerOrderRepository.findById(beerOrder.getId()).get();
-            assertEquals(BeerOrderStatusEnum.PICKED_UP, foundOrder.getOrderStatusEnum());
+            assertEquals(BeerOrderStatusEnum.PICKED_UP, foundOrder.getOrderStatus());
         });
 
         BeerOrder savedBeerOrder3 = beerOrderRepository.findById(savedBeerOrder.getId()).get();
 
-        assertEquals(BeerOrderStatusEnum.PICKED_UP, savedBeerOrder3.getOrderStatusEnum());
+        assertEquals(BeerOrderStatusEnum.PICKED_UP, savedBeerOrder3.getOrderStatus());
 
     }
 
